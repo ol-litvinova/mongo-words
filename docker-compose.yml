@@ -1,0 +1,25 @@
+services:
+  mongo:
+    image: mongo:6
+    container_name: mydictionary-mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+  backend:
+    build: ./backend
+    container_name: mydictionary-backend
+    ports:
+      - "3002:3000"
+    environment:
+      - MONGO_URL=mongodb://mongo:27017/mydictionary
+    depends_on:
+      - mongo
+    volumes:
+      - ./backend:/app
+    working_dir: /app
+    command: npm run dev
+
+volumes:
+  mongo-data:
