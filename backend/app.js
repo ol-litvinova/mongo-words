@@ -1,9 +1,14 @@
 import express from 'express';
 import mongoose from 'mongoose';
+import cors from 'cors';
 import wordsRouter from './routes/words.js';
 
 const app = express();
 const port = 3000;
+
+app.use(cors({
+    origin: 'http://localhost:5173', // або '*' для всіх
+}));
 
 app.use(express.json());
 
