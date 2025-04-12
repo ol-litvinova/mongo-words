@@ -13,7 +13,9 @@
       </label>
     </div>
 
-    <div v-if="question && !loading">
+    <div v-if="loading">Завантаження...</div>
+
+    <div v-else-if="question">
       <p><strong>Слово:</strong> {{ question }}</p>
 
       <ul>
@@ -21,16 +23,19 @@
             v-for="option in options"
             :key="option"
             @click="selectOption(option)"
-            :class="{ correct: isAnswered && option === correctAnswer, wrong: isAnswered && option === selected && option !== correctAnswer }"
+            :class="{
+            correct: isAnswered && option === correctAnswer,
+            wrong: isAnswered && option === selected && option !== correctAnswer
+          }"
         >
           {{ option }}
         </li>
       </ul>
 
-      <button :disabled="!isAnswered" @click="loadQuestion">Наступне слово</button>
+      <button v-if="isAnswered" @click="loadQuestion">Наступне слово</button>
     </div>
 
-    <div v-if="error">{{ error }}</div>
+    <div v-if="error" class="error">{{ error }}</div>
   </div>
 </template>
 
@@ -44,36 +49,52 @@ export default {
       question: '',
       options: [],
       correctAnswer: '',
+      correctId: null,
       selected: '',
       isAnswered: false,
       loading: false,
       error: '',
-      mode: 'to-ua' // або 'to-en'
+      mode: 'to-ua'
     }
   },
   methods: {
     async loadQuestion() {
-      this.isAnswered = false
-      this.selected = ''
+      this.reset()
       this.loading = true
-      this.error = ''
       try {
         const res = await fetch(`${API_BASE_URL}/training?mode=${this.mode}`)
         if (!res.ok) throw new Error('Помилка завантаження')
-
         const data = await res.json()
         this.question = data.question
         this.correctAnswer = data.answer
         this.options = data.options
+        this.correctId = data.correctId
       } catch (err) {
         this.error = err.message
       } finally {
         this.loading = false
       }
     },
-    selectOption(option) {
+    async selectOption(option) {
+      if (this.isAnswered) return
       this.selected = option
       this.isAnswered = true
+
+      const isCorrect = option === this.correctAnswer
+      if (isCorrect && this.correctId) {
+        await fetch(`${API_BASE_URL}/training/${this.correctId}/mark-trained`, {
+          method: 'PATCH'
+        })
+      }
+    },
+    reset() {
+      this.question = ''
+      this.options = []
+      this.correctAnswer = ''
+      this.correctId = null
+      this.selected = ''
+      this.isAnswered = false
+      this.error = ''
     }
   },
   mounted() {
@@ -88,6 +109,15 @@ export default {
   margin: 0 auto;
   font-family: sans-serif;
 }
+.mode-switch {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-bottom: 15px;
+}
+.mode-switch label {
+  font-size: 0.9em;
+}
 ul {
   list-style: none;
   padding: 0;
@@ -98,6 +128,7 @@ li {
   background: #f1f1f1;
   border-radius: 5px;
   cursor: pointer;
+  transition: background-color 0.2s;
 }
 li.correct {
   background: #b8f5b8;
@@ -107,7 +138,19 @@ li.wrong {
 }
 button {
   margin-top: 15px;
-  padding: 8px 16px;
+  padding: 10px 16px;
+  background: #1a73e8;
+  color: white;
+  border: none;
+  border-radius: 6px;
   cursor: pointer;
+}
+button:hover {
+  background: #125ac1;
+}
+.error {
+  margin-top: 10px;
+  color: #d33;
+  font-weight: bold;
 }
 </style>

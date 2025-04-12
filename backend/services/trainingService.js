@@ -1,36 +1,36 @@
-import Word from '../models/Word.js';
+import Word from '../models/Word.js'
 
 const getRandom = (arr) => arr[Math.floor(Math.random() * arr.length)]
 
 export const generateTraining = async (mode = 'to-ua') => {
-    const allWords = await Word.find();
+    const allWords = await Word.find({ trained: null })
+
     if (allWords.length < 5) {
-        throw new Error('Not enough words in dictionary');
+        throw new Error('Недостатньо нових слів для тренування')
     }
 
-    // Випадкове правильне слово
-    const correct = getRandom(allWords);
-
-    // Відсіюємо його з варіантів
-    const distractorsPool = allWords.filter(w => w._id.toString() !== correct._id.toString());
-
-    // Беремо 4 випадкових неправильних варіанти
-    const distractors = getRandomSubset(distractorsPool, 4);
-
-    // Формуємо варіанти
-    const options = [...distractors, correct].sort(() => 0.5 - Math.random());
+    const correct = getRandom(allWords)
+    const distractorsPool = allWords.filter(w => w._id.toString() !== correct._id.toString())
+    const distractors = getRandomSubset(distractorsPool, 4)
+    const options = [...distractors, correct].sort(() => 0.5 - Math.random())
 
     return {
         question: mode === 'to-ua' ? correct.english : getRandom(correct.translation),
         answer: mode === 'to-ua' ? correct.translation.join(', ') : correct.english,
-        options: options.map(w =>
-            mode === 'to-ua' ? w.translation.join(', ') : w.english
-        )
-    };
-};
+        options: options.map(w => mode === 'to-ua' ? w.translation.join(', ') : w.english),
+        correctId: correct._id
+    }
+}
 
-// Вибирає N випадкових елементів із масиву
+export const markAsTrained = async (wordId) => {
+    await Word.findByIdAndUpdate(wordId, { trained: true })
+}
+
+export const resetTrainingProgress = async () => {
+    await Word.updateMany({}, { trained: false })
+}
+
 function getRandomSubset(array, n) {
-    const shuffled = array.sort(() => 0.5 - Math.random());
-    return shuffled.slice(0, n);
+    const shuffled = [...array].sort(() => 0.5 - Math.random())
+    return shuffled.slice(0, n)
 }

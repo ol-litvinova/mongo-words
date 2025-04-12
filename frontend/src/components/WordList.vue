@@ -15,8 +15,8 @@
     <ul>
       <li v-for="word in words" :key="word._id" class="word-item">
         <span>
-          <strong>{{ word.english }}</strong> —
-          {{ word.translation.join(', ') }}
+          <strong>{{ word.english }}</strong> — {{ word.translation.join(', ') }}
+          <span v-if="word.trained" class="check">✅</span>
         </span>
         <button class="delete-btn" @click="deleteWord(word._id)">🗑️</button>
       </li>
@@ -89,5 +89,10 @@ export default {
 }
 .delete-btn:hover {
   color: #f33;
+}
+.check {
+  margin-left: 8px;
+  font-size: 1.1em;
+  color: green;
 }
 </style>

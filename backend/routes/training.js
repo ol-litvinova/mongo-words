@@ -1,8 +1,14 @@
-import express from 'express';
-import { getTraining } from '../controllers/trainingController.js';
+import express from 'express'
+import {
+    getTraining,
+    markWordTrained,
+    resetTraining
+} from '../controllers/trainingController.js'
 
-const router = express.Router();
+const router = express.Router()
 
-router.get('/', getTraining);
+router.get('/', getTraining)
+router.patch('/:id/mark-trained', markWordTrained)
+router.patch('/reset', resetTraining)
 
-export default router;
+export default router
