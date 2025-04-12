@@ -29,14 +29,6 @@
         <input id="topic" v-model="form.topic" placeholder="Наприклад: їжа" />
       </div>
 
-      <div class="form-group">
-        <label for="level">Рівень</label>
-        <select id="level" v-model="form.level">
-          <option value="">— Обери рівень —</option>
-          <option v-for="lvl in levels" :key="lvl" :value="lvl">{{ lvl }}</option>
-        </select>
-      </div>
-
       <button type="submit" :disabled="form.translation.length === 0">Зберегти слово</button>
     </form>
 
@@ -55,10 +47,8 @@ export default {
         english: '',
         translation: [],
         topic: '',
-        level: ''
       },
       translationInput: '',
-      levels: ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'],
       message: ''
     }
   },
@@ -83,7 +73,7 @@ export default {
 
       if (res.ok) {
         this.message = '✅ Слово успішно додано!'
-        this.form = { english: '', translation: [], topic: '', level: '' }
+        this.form = { english: '', translation: [], topic: '' }
         this.translationInput = ''
       } else if (res.status === 409) {
         this.message = '⚠️ Таке слово вже є в цій темі.';

@@ -1,9 +1,8 @@
 import Word from '../models/Word.js';
 
-export const findWords = async ({ topic, level, search }) => {
+export const findWords = async ({ topic, search }) => {
     const filter = {};
     if (topic) filter.topic = topic;
-    if (level) filter.level = level;
     if (search) filter.english = new RegExp(search, 'i');
     return Word.find(filter);
 };

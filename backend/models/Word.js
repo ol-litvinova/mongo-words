@@ -4,7 +4,6 @@ const WordSchema = new mongoose.Schema({
     english: { type: String, required: true },
     translation: { type: [String], required: true },
     topic: String,
-    level: String,
     trained: { type: Boolean, default: null }
 }, { timestamps: true });
 
