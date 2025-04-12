@@ -3,6 +3,7 @@
   <nav class="menu">
     <router-link to="/words" class="menu-item" active-class="active">📋 Список слів</router-link>
     <router-link to="/training" class="menu-item" active-class="active">🔁 Тренування</router-link>
+    <router-link to="/add" class="menu-item" active-class="active">➕ Додати слово</router-link>
   </nav>
   <main class="main-content">
     <router-view />
