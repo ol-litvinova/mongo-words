@@ -9,13 +9,19 @@
   </div>
 </template>
 
-<script setup>
-import { ref, onMounted } from 'vue'
+<script>
+import { API_BASE_URL } from '../config.js'
 
-const words = ref([])
-
-onMounted(async () => {
-  const res = await fetch('http://localhost:3002/api/words')
-  words.value = await res.json()
-})
+export default {
+  name: 'WordList',
+  data() {
+    return {
+      words: []
+    }
+  },
+  async mounted() {
+    const res = await fetch(`${API_BASE_URL}/words`)
+    this.words = await res.json()
+  }
+}
 </script>
