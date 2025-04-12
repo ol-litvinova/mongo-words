@@ -5,7 +5,7 @@ const getRandom = (arr) => arr[Math.floor(Math.random() * arr.length)]
 export const generateTraining = async (mode = 'to-ua') => {
     const allWords = await Word.find({ trained: null })
 
-    if (allWords.length < 5) {
+    if (allWords.length === 0) {
         throw new Error('Недостатньо нових слів для тренування')
     }
 

@@ -87,6 +87,16 @@ export default {
         })
       }
     },
+    speak(text) {
+      if (!('speechSynthesis' in window)) return;
+      if (this.mode !== 'to-en') return
+
+      const utter = new SpeechSynthesisUtterance(text)
+      utter.lang = 'en-US'
+      utter.rate = 0.9
+      speechSynthesis.cancel()
+      speechSynthesis.speak(utter)
+    },
     reset() {
       this.question = ''
       this.options = []
@@ -99,7 +109,12 @@ export default {
   },
   mounted() {
     this.loadQuestion()
-  }
+  },
+  watch: {
+    question() {
+      this.speak(this.question)
+    }
+  },
 }
 </script>
 
