@@ -1,5 +1,5 @@
 import * as wordService from '../services/wordService.js';
-import {findWords} from "../services/wordService.js";
+import {findOneWord} from "../services/wordService.js";
 
 export const getWords = async (req, res) => {
     const words = await wordService.findWords(req.query);
@@ -7,12 +7,7 @@ export const getWords = async (req, res) => {
 };
 
 export const addWord = async (req, res) => {
-    const exist = findWords(
-        {
-            topic: req.body.topic,
-            search: req.body.english,
-        }
-    );
+    const exist = await findOneWord(req.body.english, req.body.topic);
 
     if (exist) {
         return res.status(409).json({ message: 'Це слово вже існує в цій темі.' });
@@ -31,3 +26,18 @@ export const deleteWord = async (req, res) => {
     await wordService.deleteWordById(req.params.id);
     res.status(204).end();
 };
+
+export const deleteWordsByTopic = async (req, res) => {
+    const { topic } = req.params
+
+    if (!topic) {
+        return res.status(400).json({ message: 'Потрібен topic у параметрі URL' })
+    }
+
+    try {
+        const result = await wordService.deleteWordsByTopic(topic)
+        res.json({ message: `Видалено ${result.deletedCount} слів з теми "${topic}"` })
+    } catch (err) {
+        res.status(500).json({ message: 'Помилка видалення', error: err.message })
+    }
+}

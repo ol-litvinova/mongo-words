@@ -7,6 +7,13 @@ export const findWords = async ({ topic, search }) => {
     return Word.find(filter);
 };
 
+export const findOneWord = async (word, topic) => {
+    return Word.findOne({
+        english: word,
+        topic: topic
+    });
+};
+
 export const createWord = async (data) => {
     const word = new Word(data);
     return word.save();
@@ -19,3 +26,7 @@ export const updateWordById = async (id, data) => {
 export const deleteWordById = async (id) => {
     return Word.findByIdAndDelete(id);
 };
+
+export const deleteWordsByTopic = async (topic) => {
+    return Word.deleteMany({ topic })
+}
