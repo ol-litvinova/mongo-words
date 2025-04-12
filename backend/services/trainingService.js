@@ -22,9 +22,9 @@ export const generateTraining = async (mode = 'to-ua') => {
 
     return {
         question: mode === 'to-ua' ? correct.english : getRandom(correct.translation),
-        answer: mode === 'to-ua' ? getRandom(correct.translation) : correct.english,
+        answer: mode === 'to-ua' ? correct.translation.join(', ') : correct.english,
         options: options.map(w =>
-            mode === 'to-ua' ? getRandom(w.translation) : w.english
+            mode === 'to-ua' ? w.translation.join(', ') : w.english
         )
     };
 };

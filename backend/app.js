@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 import wordsRouter from './routes/words.js';
 import trainingRouter from './routes/training.js';
+import topicsRouter from './routes/topics.js';
 
 const app = express();
 const port = 3000;
@@ -15,6 +16,7 @@ app.use(express.json());
 
 app.use('/api/words', wordsRouter);
 app.use('/api/training', trainingRouter);
+app.use('/api/topics', topicsRouter);
 
 const mongoUrl = process.env.MONGO_URL || 'mongodb://localhost:27017/mydictionary';
 

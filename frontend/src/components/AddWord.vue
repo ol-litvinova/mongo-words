@@ -85,6 +85,8 @@ export default {
         this.message = '✅ Слово успішно додано!'
         this.form = { english: '', translation: [], topic: '', level: '' }
         this.translationInput = ''
+      } else if (res.status === 409) {
+        this.message = '⚠️ Таке слово вже є в цій темі.';
       } else {
         this.message = '❌ Помилка додавання слова.'
       }

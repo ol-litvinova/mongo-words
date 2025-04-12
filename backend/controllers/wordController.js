@@ -1,4 +1,5 @@
 import * as wordService from '../services/wordService.js';
+import {findWords} from "../services/wordService.js";
 
 export const getWords = async (req, res) => {
     const words = await wordService.findWords(req.query);
@@ -6,6 +7,17 @@ export const getWords = async (req, res) => {
 };
 
 export const addWord = async (req, res) => {
+    const exist = findWords(
+        {
+            topic: req.body.topic,
+            search: req.body.english,
+        }
+    );
+
+    if (exist) {
+        return res.status(409).json({ message: 'Це слово вже існує в цій темі.' });
+    }
+
     const word = await wordService.createWord(req.body);
     res.status(201).json(word);
 };
