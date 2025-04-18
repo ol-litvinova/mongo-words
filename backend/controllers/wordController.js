@@ -2,8 +2,16 @@ import * as wordService from '../services/wordService.js';
 import {findOneWord} from "../services/wordService.js";
 
 export const getWords = async (req, res) => {
-    const words = await wordService.findWords(req.query);
-    res.json(words);
+    const {topic, search, limit, page } = req.query;
+
+    const result = await wordService.findWords({
+        topic,
+        search,
+        page: Number(page) || 1,
+        limit: Number(limit) || 10,
+    });
+
+    res.json(result);
 };
 
 export const addWord = async (req, res) => {

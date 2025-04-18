@@ -3,8 +3,7 @@
     <h2>Список слів</h2>
 
     <div class="filter">
-      <label for="topic">Фільтр за темою:</label>
-      <select id="topic" v-model="selectedTopic" @change="fetchWords">
+      <select id="topic" v-model="selectedTopic" @change="changeTopic">
         <option value="">Усі теми</option>
         <option v-for="topic in availableTopics" :key="topic" :value="topic">
           {{ topic }}
@@ -21,6 +20,12 @@
         <button class="delete-btn" @click="deleteWord(word._id)">🗑️</button>
       </li>
     </ul>
+
+    <div class="pagination">
+      <button :disabled="page === 1" @click="page-- && fetchWords()">⬅️ Назад</button>
+      <span>Сторінка {{ page }} з {{ totalPages }}</span>
+      <button :disabled="page === totalPages" @click="page++ && fetchWords()">Вперед ➡️</button>
+    </div>
   </div>
 </template>
 
@@ -33,17 +38,28 @@ export default {
     return {
       words: [],
       selectedTopic: '',
-      availableTopics: []
+      availableTopics: [],
+      page: 1,
+      limit: 10,
+      total: 0
     }
   },
   methods: {
+    async changeTopic() {
+      this.page = 1
+      await this.fetchWords()
+    },
     async fetchWords() {
-      const url = this.selectedTopic
-          ? `${API_BASE_URL}/words?topic=${encodeURIComponent(this.selectedTopic)}`
-          : `${API_BASE_URL}/words`
+      const params = new URLSearchParams({
+        topic: this.selectedTopic,
+        limit: this.limit,
+        page: this.page
+      })
 
-      const res = await fetch(url)
-      this.words = await res.json()
+      const res = await fetch(`${API_BASE_URL}/words?` + params.toString())
+      const data = await res.json()
+      this.words = data.words
+      this.total = data.total
     },
     async fetchTopics() {
       const res = await fetch(`${API_BASE_URL}/topics`)
@@ -64,6 +80,11 @@ export default {
   mounted() {
     this.fetchTopics()
     this.fetchWords()
+  },
+  computed: {
+    totalPages() {
+      return Math.ceil(this.total / this.limit)
+    }
   }
 }
 </script>
@@ -94,5 +115,17 @@ export default {
   margin-left: 8px;
   font-size: 1.1em;
   color: green;
+}
+.filter {
+  text-align: right;
+
+  select {
+    padding: 10px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    background: white;
+    border-radius: 6px;
+    transition: border-color 0.3s;
+  }
 }
 </style>

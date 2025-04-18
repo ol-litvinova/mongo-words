@@ -89,7 +89,7 @@ export default {
     },
     speak(text) {
       if (!('speechSynthesis' in window)) return;
-      if (this.mode !== 'to-en') return
+      if (this.mode !== 'to-ua') return
 
       const utter = new SpeechSynthesisUtterance(text)
       utter.lang = 'en-US'
