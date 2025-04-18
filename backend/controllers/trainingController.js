@@ -1,9 +1,9 @@
 import * as trainingService from '../services/trainingService.js'
 
 export const getTraining = async (req, res) => {
+    const { mode, topic } = req.query;
     try {
-        const mode = req.query.mode || 'to-ua'
-        const training = await trainingService.generateTraining(mode)
+        const training = await trainingService.generateTraining(mode, topic)
         res.json(training)
     } catch (err) {
         res.status(400).json({ message: err.message })

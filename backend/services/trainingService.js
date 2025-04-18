@@ -2,8 +2,11 @@ import Word from '../models/Word.js'
 
 const getRandom = (arr) => arr[Math.floor(Math.random() * arr.length)]
 
-export const generateTraining = async (mode = 'to-ua') => {
-    const allWords = await Word.find({ trained: null })
+export const generateTraining = async (mode = 'to-ua', topic = null) => {
+    const filter = { trained: null }
+    if (topic) filter.topic = topic
+
+    const allWords = await Word.find(filter)
 
     if (allWords.length === 0) {
         throw new Error('Недостатньо нових слів для тренування')
