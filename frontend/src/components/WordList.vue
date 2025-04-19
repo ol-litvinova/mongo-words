@@ -3,12 +3,7 @@
     <h2>Список слів</h2>
 
     <div class="filter">
-      <select id="topic" v-model="selectedTopic" @change="changeTopic">
-        <option value="">Усі теми</option>
-        <option v-for="topic in availableTopics" :key="topic" :value="topic">
-          {{ topic }}
-        </option>
-      </select>
+      <SelectTopic v-model="selectedTopic" @update:modelValue="changeTopic" />
     </div>
 
     <ul>
@@ -31,9 +26,11 @@
 
 <script>
 import { API_BASE_URL } from '../config.js'
+import SelectTopic from "./SelectTopic.vue";
 
 export default {
   name: 'WordList',
+  components: {SelectTopic},
   data() {
     return {
       words: [],
@@ -61,10 +58,6 @@ export default {
       this.words = data.words
       this.total = data.total
     },
-    async fetchTopics() {
-      const res = await fetch(`${API_BASE_URL}/topics`)
-      this.availableTopics = await res.json()
-    },
     async deleteWord(id) {
       const confirmDelete = confirm('Ви впевнені, що хочете видалити це слово?')
       if (!confirmDelete) return
@@ -78,7 +71,6 @@ export default {
     }
   },
   mounted() {
-    this.fetchTopics()
     this.fetchWords()
   },
   computed: {

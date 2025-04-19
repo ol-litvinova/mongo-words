@@ -12,10 +12,7 @@
         </label>
       </div>
 
-      <select v-model="selectedTopic" @change="loadQuestion">
-        <option value="">Всі теми</option>
-        <option v-for="topic in topics" :key="topic" :value="topic">{{ topic }}</option>
-      </select>
+      <SelectTopic v-model="selectedTopic" @update:modelValue="loadQuestion" />
     </div>
 
     <div v-if="loading">Завантаження...</div>
@@ -46,9 +43,11 @@
 
 <script>
 import { API_BASE_URL } from '../config.js'
+import SelectTopic from "./SelectTopic.vue";
 
 export default {
   name: 'WordTraining',
+  components: {SelectTopic},
   data() {
     return {
       topics: [],
@@ -65,9 +64,15 @@ export default {
     }
   },
   methods: {
-    async fetchTopics() {
-      const res = await fetch(`${API_BASE_URL}/topics`)
-      this.topics = await res.json()
+    speak(text) {
+      if (!('speechSynthesis' in window)) return;
+      if (this.mode !== 'to-ua') return
+
+      const utter = new SpeechSynthesisUtterance(text)
+      utter.lang = 'en-US'
+      utter.rate = 0.9
+      speechSynthesis.cancel()
+      speechSynthesis.speak(utter)
     },
     async loadQuestion() {
       this.reset()
@@ -113,8 +118,14 @@ export default {
     }
   },
   mounted() {
-    this.fetchTopics()
     this.loadQuestion()
+  },
+  watch: {
+    question() {
+      if (this.question) {
+        this.speak(this.question)
+      }
+    }
   }
 }
 </script>
@@ -131,15 +142,6 @@ export default {
   align-items: center;
   margin-bottom: 20px;
   justify-content: space-between;
-
-  select {
-    padding: 10px;
-    font-size: 1rem;
-    border: 1px solid #ccc;
-    background: white;
-    border-radius: 6px;
-    transition: border-color 0.3s;
-  }
 }
 ul {
   list-style: none;
