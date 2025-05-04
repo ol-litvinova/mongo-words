@@ -29,8 +29,14 @@ export const markAsTrained = async (wordId) => {
     await Word.findByIdAndUpdate(wordId, { trained: true })
 }
 
-export const resetTrainingProgress = async () => {
-    await Word.updateMany({}, { trained: false })
+export const resetTrainingProgress = async (topic = null) => {
+    const filter = {}
+    if (topic) {
+        filter.topic = topic
+    }
+
+    const result = await Word.updateMany(filter, { $set: { trained: null } })
+    return result.modifiedCount
 }
 
 function getRandomSubset(array, n) {

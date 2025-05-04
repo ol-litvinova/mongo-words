@@ -9,6 +9,6 @@ const router = express.Router()
 
 router.get('/', getTraining)
 router.patch('/:id/mark-trained', markWordTrained)
-router.patch('/reset', resetTraining)
+router.delete('/progress/reset', resetTraining)
 
 export default router

@@ -4,9 +4,10 @@
 
     <div class="filter">
       <SelectTopic v-model="selectedTopic" @update:modelValue="changeTopic" />
+      <button @click="resetProgress">♻️ Скинути прогрес</button>
     </div>
 
-    <ul>
+    <ul class="words-list">
       <li v-for="word in words" :key="word._id" class="word-item">
         <span>
           <strong>{{ word.english }}</strong> — {{ word.translation.join(', ') }}
@@ -68,6 +69,19 @@ export default {
       } else {
         alert('Помилка видалення')
       }
+    },
+    async resetProgress() {
+      if (!confirm('Ви впевнені, що хочете скинути прогрес?')) return
+
+      const params = new URLSearchParams()
+      if (this.selectedTopic) params.append('topic', this.selectedTopic)
+
+      const res = await fetch(`${API_BASE_URL}/training/progress/reset?${params.toString()}`, {
+        method: 'DELETE'
+      })
+
+      const data = await res.json()
+      alert(data.message + ` (${data.modifiedCount} записів скинуто)`)
     }
   },
   mounted() {
@@ -84,6 +98,12 @@ export default {
 <style scoped>
 .filter {
   margin-bottom: 15px;
+  display: flex;
+  justify-content: space-between;
+}
+.words-list {
+  list-style: none;
+  padding-left: 0;
 }
 .word-item {
   display: flex;

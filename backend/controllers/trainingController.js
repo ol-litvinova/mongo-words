@@ -20,10 +20,12 @@ export const markWordTrained = async (req, res) => {
 }
 
 export const resetTraining = async (req, res) => {
+    const { topic } = req.query
+
     try {
-        await trainingService.resetTrainingProgress()
-        res.json({ message: 'Прогрес скинуто' })
+        const modifiedCount = await trainingService.resetTrainingProgress(topic)
+        res.json({ message: 'Прогрес скинуто', modifiedCount })
     } catch (err) {
-        res.status(500).json({ message: err.message })
+        res.status(500).json({ message: 'Помилка при скиданні', error: err.message })
     }
 }
